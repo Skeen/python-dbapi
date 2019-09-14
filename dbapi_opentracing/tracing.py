@@ -130,29 +130,30 @@ class _Cursor(object):
         return query
 
     def _traced_execution(self, func, *args, **kwargs):
-        statement = self._get_statement(args)
-        operation_name = _operation_name(self, func, statement)
-        with self._self_tracer.start_active_span(operation_name) as scope:
-            span = scope.span
-            span.set_tag(tags.DATABASE_TYPE, 'sql')
-            span.set_tag(tags.SPAN_KIND, tags.SPAN_KIND_RPC_CLIENT)
-            span.set_tag(tags.DATABASE_STATEMENT, self._get_query(args))
-
-            for tag, value in self._self_span_tags.items():
-                span.set_tag(tag, value)
-
-            try:
-                print(func)
-                print(args)
-                print(kwargs)
-                val = func(*args, **kwargs)
-            except Exception:
-                span.set_tag(tags.ERROR, True)
-                span.log_kv({'event': 'error',
-                             'error.object': traceback.format_exc()})
-                raise
-            span.set_tag('db.rows_produced', self.rowcount)
-        return val
+        return func(*args, **kwargs)
+#        statement = self._get_statement(args)
+#        operation_name = _operation_name(self, func, statement)
+#        with self._self_tracer.start_active_span(operation_name) as scope:
+#            span = scope.span
+#            span.set_tag(tags.DATABASE_TYPE, 'sql')
+#            span.set_tag(tags.SPAN_KIND, tags.SPAN_KIND_RPC_CLIENT)
+#            span.set_tag(tags.DATABASE_STATEMENT, self._get_query(args))
+#
+#            for tag, value in self._self_span_tags.items():
+#                span.set_tag(tag, value)
+#
+#            try:
+#                print(func)
+#                print(args)
+#                print(kwargs)
+#                val = func(*args, **kwargs)
+#            except Exception:
+#                span.set_tag(tags.ERROR, True)
+#                span.log_kv({'event': 'error',
+#                             'error.object': traceback.format_exc()})
+#                raise
+#            span.set_tag('db.rows_produced', self.rowcount)
+#        return val
 
     def __enter__(self):
         return self
