@@ -142,6 +142,9 @@ class _Cursor(object):
                 span.set_tag(tag, value)
 
             try:
+                print(func)
+                print(args)
+                print(kwargs)
                 val = func(*args, **kwargs)
             except Exception:
                 span.set_tag(tags.ERROR, True)
